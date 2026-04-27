@@ -1,9 +1,6 @@
 //////////////////////////////////////////////////////////////////////////////////
-// The Cooper Union
-// ECE 251 Spring 2023
-// Engineer: Prof Rob Marano
-// 
-//     Create Date: 2023-02-07
+// Christine, Shayna 
+//     
 //     Module Name: tb_signext
 //     Description: Test bench for sign extender
 //
