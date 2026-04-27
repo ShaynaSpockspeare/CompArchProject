@@ -1,13 +1,12 @@
 //////////////////////////////////////////////////////////////////////////////////
-// The Cooper Union
-// ECE 251 Spring 2023
-// Engineer: Prof Rob Marano
+// Christine Shammout, Shayna Levin 
 // 
-//     Create Date: 2023-02-07
+// 
+//     Create Date: apr 26, 2026
 //     Module Name: mux2
 //     Description: 2 to 1 multiplexer
 //
-// Revision: 1.0
+// 
 //
 //////////////////////////////////////////////////////////////////////////////////
 `ifndef MUX2
