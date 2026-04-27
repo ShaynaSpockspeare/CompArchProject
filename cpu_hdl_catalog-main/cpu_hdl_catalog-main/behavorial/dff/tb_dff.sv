@@ -1,13 +1,10 @@
 //////////////////////////////////////////////////////////////////////////////////
-// The Cooper Union
-// ECE 251 Spring 2023
-// Engineer: Prof Rob Marano
-// 
-//     Create Date: 2023-02-07
+// Christine, Shayna 
+//
 //     Module Name: tb_dff
 //     Description: Test bench for 32 bit D flip flop
 //
-// Revision: 1.0
+// 
 //
 //////////////////////////////////////////////////////////////////////////////////
 `ifndef TB_DFF
@@ -41,7 +38,7 @@ module tb_dff;
         #10 reset <= 0;
         #10 reset <=0;
         #20 d <= #n'h0001;
-        #100 enable <= 0;
+        #99 enable <= 0;
         $finish;        
     end
 
