@@ -1,9 +1,6 @@
 //////////////////////////////////////////////////////////////////////////////////
-// The Cooper Union
-// ECE 251 Spring 2023
-// Engineer: Prof Rob Marano
-// 
-//     Create Date: 2023-02-07
+// Christine, Shayna 
+//     Create Date: apr 26, 2026
 //     Module Name: tb_adder
 //     Description: Test bench for simple behavorial adder
 //
