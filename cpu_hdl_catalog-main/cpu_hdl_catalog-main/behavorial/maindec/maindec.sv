@@ -1,13 +1,9 @@
 //////////////////////////////////////////////////////////////////////////////////
-// The Cooper Union
-// ECE 251 Spring 2023
-// Engineer: Prof Rob Marano
-// 
-//     Create Date: 2023-02-07
+// Christine, Shayna
+//
+//     Create Date: apr 27,2026
 //     Module Name: maindec
 //     Description: 32-bit RISC-based CPU main decoder (MIPS)
-//
-// Revision: 1.0
 //
 //////////////////////////////////////////////////////////////////////////////////
 `ifndef MAINDEC
@@ -44,6 +40,12 @@ module maindec
             6'b000100: controls <= 9'b000100001; // BEQ
             6'b001000: controls <= 9'b101000000; // ADDI
             6'b000010: controls <= 9'b000000100; // J
+
+            // more Instructions for DSP 
+            6'b111100: controls = 9'b000000011; // MADD (Multiply-Accumulate)
+            6'b111101: controls = 9'b000000000; // REPEAT (Zero-Overhead Loop)
+
+
             default:   controls <= 9'bxxxxxxxxx; // illegal operation
         endcase
     end
