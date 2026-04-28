@@ -1,13 +1,10 @@
 //////////////////////////////////////////////////////////////////////////////////
-// The Cooper Union
-// ECE 251 Spring 2023
-// Engineer: Prof Rob Marano
+// Christine, Shayna
 // 
-//     Create Date: 2023-02-07
+//     Create Date: apr 28, 2026
 //     Module Name: alu
 //     Description: 32-bit RISC-based CPU alu (MIPS)
 //
-// Revision: 1.0
 // see https://github.com/Caskman/MIPS-Processor-in-Verilog/blob/master/ALU32Bit.v
 //////////////////////////////////////////////////////////////////////////////////
 `ifndef ALU
@@ -22,7 +19,7 @@ module alu
     //
     input  logic        clk,
     input  logic [(n-1):0] a, b,
-    input  logic [2:0]  alucontrol,
+    input  logic [3:0]  alucontrol, // upgraded this line 
     output logic [(n-1):0] result,
     output logic        zero
 );
@@ -44,41 +41,40 @@ module alu
 
     always @(a,b,alucontrol) begin
         case (alucontrol)
-            3'b000: result = a & b;             // and
-            3'b001: result = a | b;             // or
-            3'b010: result = a + b;             // add
-            3'b011: result = ~(a | b);           // nor
-            3'b100: result = HiLo[(n-1):0];     // MFLO
-            3'b101: result = HiLo[(2*n-1):n];   // MFHI
-            3'b110: result = sumSlt;            // sub
-            // 3'b111: result = sumSlt[(n-1)];     // slt
-            3'b111: begin                       // slt
-				if (a[31] != b[31])
+            4'b0000: result = a & b;             // and
+            4'b0001: result = a | b;             // or
+            4'b0010: result = a + b;             // add
+            4'b0110: result = sumSlt;            // sub
+            4'b0100: result = HiLo[(n-1):0];     // MFLO lower 32 bits
+            4'b0101: result = HiLo[(2*n-1):n];   // MFHI higher 32 bits
+            4'b0111: begin                       // slt
+				if (a[31] != b[31]) begin
 					if (a[31] > b[31])
 						result = 1;
 					else
 						result = 0;
-				else
+                 end else begin
+                 if (a < b) result = 1; 
+				else result = 0;
 					if (a < b)
 						result = 1;
 					else
 						result = 0;
             end
-        endcase
-    end
+        end 
+        default: result = 32'b0; // Safety default
+    endcase
 
-    //Multiply and divide results are only stored at clock falling edge.
+    //Multiply and DSP results are only stored at clock falling edge.
     always @(negedge clk) begin
         case (alucontrol)
-            3'b011: HiLo = a * b; // mult
-            3'b101: // div
-            begin
-                HiLo[(n-1):0] = a / b;
-                HiLo[(2*n-1):n] = a % b;
-            end
+            4'b0011: HiLo = a * b; // mult
+
+            4'b1000: HiLo = HiLo + (a * b); // MADD (custom to DSP)
         endcase				
     end
-
-endmodule
-
-`endif // ALU
+ // removed the division logic to accomodate DSP (MIPS DSPs 
+ // rarely use hardware division)
+ 
+ endmodule
+ 'endif // ALU
