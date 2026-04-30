@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 // The Cooper Union
 // ECE 251 Spring 2023
-// Engineer: Prof Rob Marano
+// Engineer: Shayna Levin and Christine Shammout
 // 
 //     Create Date: 2023-02-07
 //     Module Name: tb_imem
@@ -25,6 +25,15 @@ module tb_imem;
    initial begin
         $dumpfile("imem.vcd");
         $dumpvars(0, uut);
+        imem_addr = 0;
+        #5;
+        for (int i = 0; i < 6; i++) begin
+            imem_addr = i; 
+            #10;
+            $$display("Time: %0t | Address: %0d | Instruction: %h", $time, imem_addr, readdata);
+        end
+        #10;
+        $finish;
         //$monitor("enable = %b clk = %b", enable, clk);
         $monitor("time=%0t \t imem_addr=%b readdata=%h",$realtime, imem_addr, readdata);
     end

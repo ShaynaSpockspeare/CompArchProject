@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 // The Cooper Union
-// ECE 251 Spring 2023
-// Engineer: Prof Rob Marano
+// ECE 251 Spring 2026
+// Engineer: Shayna Levin and Christine Shammout
 // 
 //     Create Date: 2023-02-07
 //     Module Name: imem
