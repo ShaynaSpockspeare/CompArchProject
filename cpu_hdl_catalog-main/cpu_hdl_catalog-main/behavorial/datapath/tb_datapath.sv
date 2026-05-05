@@ -7,7 +7,7 @@ module tb_datapath;
     // Inputs
     logic clk, reset;
     logic memtoreg, pcsrc, alusrc, regdst, regwrite, jump;
-    logic [2:0] alucontrol;
+    logic [3:0] alucontrol;
     logic [n-1:0] instr;
     logic [n-1:0] readdata;
 

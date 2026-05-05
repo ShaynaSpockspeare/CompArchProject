@@ -33,7 +33,7 @@ module tb_dmem;
     end
 
     initial begin
-        clock_enable 0;
+        clock_enable = 0;
         write_enable = 0;
         dmem_addr = 0;
         #20 writedata = 0;

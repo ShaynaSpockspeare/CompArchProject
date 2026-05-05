@@ -30,7 +30,7 @@ module tb_imem;
         for (int i = 0; i < 6; i++) begin
             imem_addr = i; 
             #10;
-            $$display("Time: %0t | Address: %0d | Instruction: %h", $time, imem_addr, readdata);
+            $display("Time: %0t | Address: %0d | Instruction: %h", $time, imem_addr, readdata);
         end
         #10;
         $finish;
