@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 // The Cooper Union
 // ECE 251 Spring 2023
-// Engineer: Prof Rob Marano
+// Engineer: Shayna and Christine
 // 
 //     Create Date: 2023-02-07
 //     Module Name: controller
