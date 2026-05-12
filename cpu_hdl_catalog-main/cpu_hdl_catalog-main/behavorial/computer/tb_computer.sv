@@ -1,13 +1,9 @@
 //////////////////////////////////////////////////////////////////////////////////
-// The Cooper Union
-// ECE 251 Spring 2023
-// Engineer: Prof Rob Marano
+//
 // 
-//     Create Date: 2023-02-07
+//     Create Date: may 12,2026
 //     Module Name: tb_computer
 //     Description: Test bench for a single-cycle MIPS computer
-//
-// Revision: 1.0
 //
 //////////////////////////////////////////////////////////////////////////////////
 `ifndef TB_COMPUTER
@@ -65,11 +61,11 @@ module tb_computer;
       $display("+");
       $display("\t+instr = 0x%8h",dut.instr);
       $display("\t+op = 0b%6b",dut.mips.c.op);
-      $display("\t+controls = 0b%9b",dut.mips.c.md.controls);
-      $display("\t+funct = 0b%6b",dut.mips.c.ad.funct);
-      $display("\t+aluop = 0b%2b",dut.mips.c.ad.aluop);
-      $display("\t+alucontrol = 0b%3b",dut.mips.c.ad.alucontrol);
-      $display("\t+alu result = 0x%8h",dut.mips.dp.alu.result);
+      // $display("\t+controls = 0b%9b",dut.mips.c.md.controls);
+      // $display("\t+funct = 0b%6b",dut.mips.c.ad.funct);
+      // $display("\t+aluop = 0b%2b",dut.mips.c.ad.aluop);
+      $display("\t+alucontrol = 0b%4b",dut.mips.c.alucontrol);
+      $display("\t+alu result = 0x%8h",dut.mips.dp.aluout);
       $display("\t+HiLo = 0x%8h",dut.mips.dp.alu.HiLo);
       $display("\t+$v0 = 0x%4h",dut.mips.dp.rf.rf[2]);
       $display("\t+$v1 = 0x%4h",dut.mips.dp.rf.rf[3]);
@@ -94,11 +90,11 @@ module tb_computer;
     $display("-");
     $display("\t-instr = 0x%8h",dut.instr);
     $display("\t-op = 0b%6b",dut.mips.c.op);
-    $display("\t-controls = 0b%9b",dut.mips.c.md.controls);
-    $display("\t-funct = 0b%6b",dut.mips.c.ad.funct);
-    $display("\t-aluop = 0b%2b",dut.mips.c.ad.aluop);
-    $display("\t-alucontrol = 0b%3b",dut.mips.c.ad.alucontrol);
-    $display("\t-alu result = 0x%8h",dut.mips.dp.alu.result);
+    // $display("\t-controls = 0b%9b",dut.mips.c.md.controls);
+    // $display("\t-funct = 0b%6b",dut.mips.c.ad.funct);
+    // $display("\t-aluop = 0b%2b",dut.mips.c.ad.aluop);
+    $display("\t-alucontrol = 0b%4b",dut.mips.c.alucontrol);
+    $display("\t-alu result = 0x%8h",dut.mips.dp.aluout);
     $display("\t-HiLo = 0x%8h",dut.mips.dp.alu.HiLo);
     $display("\t-$v0 = 0x%4h",dut.mips.dp.rf.rf[2]);
     $display("\t-$v1 = 0x%4h",dut.mips.dp.rf.rf[3]);
@@ -132,7 +128,7 @@ module tb_computer;
         firstTest = 1'b1;
       end
     if(memwrite) begin
-      if(dataadr === 84 & writedata === 32'h96)
+      if(dataadr === 84 && writedata === 32'h96)
       begin
         $display("Successfully wrote 0x%4h at RAM[%3d]",writedata,dataadr);
         firstTest = 1'b1;

@@ -1,13 +1,9 @@
 //////////////////////////////////////////////////////////////////////////////////
-// The Cooper Union
-// ECE 251 Spring 2023
-// Engineer: Prof Rob Marano
+// Christine, Shayna
 // 
-//     Create Date: 2023-02-07
+//     Create Date: may 12,2026
 //     Module Name: computer
 //     Description: 32-bit RISC
-//
-// Revision: 1.0
 //
 //////////////////////////////////////////////////////////////////////////////////
 `ifndef COMPUTER
@@ -33,14 +29,34 @@ module computer
     //
     logic [(n-1):0] pc, instr, readdata;
 
-    // computer internal components
+//  The RISC CPU
+    // used named mapping to ensure the 4-bit alucontrol logic inside works
+    cpu mips(
+        .clk(clk),
+        .reset(reset),
+        .pc(pc),
+        .instr(instr),
+        .memwrite(memwrite),
+        .aluout(dataadr),
+        .writedata(writedata),
+        .readdata(readdata)
+    );
 
-    // the RISC CPU
-    cpu mips(clk, reset, pc, instr, memwrite, dataadr, writedata, readdata);
-    // the instruction memory ("text segment") in main memory
-    imem imem(pc[7:2], instr);
-    // the data memory ("data segment") in main memory
-    dmem dmem(clk, memwrite, dataadr, writedata, readdata);
+    //  The instruction memory (ROM - holds your assembly code)
+    // pc[7:2] handles word-alignment for a small 64-word memory
+    imem imem(
+        .a(pc[7:2]), 
+        .rd(instr)
+    );
+
+    // The data memory (RAM - holds your data)
+    dmem dmem(
+        .clk(clk),
+        .we(memwrite),
+        .a(dataadr),
+        .wd(writedata),
+        .rd(readdata)
+    );
 
 endmodule
 
