@@ -45,7 +45,7 @@ module cpu
         .jump(jump),
         .alucontrol(alucontrol)
     );
-
+ 
     // datapath
     datapath #(32) dp (
         .clk(clk),
