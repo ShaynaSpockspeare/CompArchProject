@@ -1,55 +1,43 @@
 `timescale 1ns/100ps
 
 module tb_regfile();
-    // Parameters
-    parameter n = 32;
-    parameter r = 5;
 
-    // Signals
-    logic clk;
-    logic we3;
-    logic [r-1:0] ra1, ra2, wa3;
-    logic [n-1:0] wd3;
-    logic [n-1:0] rd1, rd2;
+    logic        clk;
+    logic        we3;
+    logic [4:0]  ra1, ra2, wa3;
+    logic [31:0] wd3;
+    logic [31:0] rd1, rd2;
 
-    // Instantiate the Unit Under Test (UUT)
-    regfile #(n, r) uut (
-        .clk(clk), .we3(we3), 
-        .ra1(ra1), .ra2(ra2), .wa3(wa3), 
-        .wd3(wd3), .rd1(rd1), .rd2(rd2)
-    );
+    // Instantiate UUT
+    regfile dut (.*);
 
-    // Clock generation
+    // 10ns Clock Generator
     always #5 clk = ~clk;
 
     initial begin
-        // Initialize Signals
-        clk = 0; we3 = 0; 
+        clk = 0;
+        we3 = 0;
         ra1 = 0; ra2 = 0; wa3 = 0; wd3 = 0;
 
-        // Setup Waveform Dumping (Required for GTKWave/Makefile)
-        $dumpfile("regfile.vcd");
-        $dumpvars(0, tb_regfile);
+        #12; // Wait until after a clock edge
+        wa3 = 5'd0; wd3 = 32'hFFFF_FFFF; we3 = 1; // Try to write to Reg 0
+        #10; // Wait for negedge write to pass
+        we3 = 0; ra1 = 5'd0;
+        #1;
+        $display("t=%0t | Register 0 Check - Data: 0x%h (Expect 00000000)", $time, rd1);
 
-        // TEST 1: Write to Register 5
-        #10;
-        wa3 = 5; wd3 = 32'hDEADBEEF; we3 = 1;
-        #10;
-        we3 = 0;
+        wa3 = 5'd4; wd3 = 32'hAAAA_BBBB; we3 = 1;
+        #10; // Allow falling-edge write commitment
+        we3 = 0; ra1 = 5'd4;
+        #1;
+        $display("t=%0t | Standard Read  - Reg4: 0x%h (Expect AAAABBBB)", $time, rd1);
 
-        // TEST 2: Read from Register 5
-        #10;
-        ra1 = 5; // rd1 should become DEADBEEF
+        ra2 = 5'd4; wa3 = 5'd4; wd3 = 32'hCCCC_DDDD; we3 = 1;
+        #1; // Check immediately BEFORE the clock edge 
+        $display("t=%0t | Bypass Active  - Reg4 Read: 0x%h (Expect CCCCDDDD)", $time, rd2);
 
-        // TEST 3: Try to write to Register 0 (Should remain 0)
-        #10;
-        wa3 = 0; wd3 = 32'hFFFFFFFF; we3 = 1;
-        #10;
-        we3 = 0;
-        ra2 = 0; // rd2 should stay 0
-
-        #20;
-        $display("Simulation Finished");
+        #9;
         $finish;
     end
+
 endmodule

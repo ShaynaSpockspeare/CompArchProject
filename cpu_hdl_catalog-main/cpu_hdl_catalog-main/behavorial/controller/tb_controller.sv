@@ -1,46 +1,34 @@
 `timescale 1ns/100ps
-`include "controller.sv"
 
-module tb_controller;
-    logic [5:0] op, funct;
-    logic       zero;
-    logic       memtoreg, memwrite, pcsrc, alusrc;
-    logic       regdst, regwrite, jump;
-    logic [2:0] alucontrol;
+module tb_controller();
 
-    controller uut (
-        .op(op), .funct(funct), .zero(zero),
-        .memtoreg(memtoreg), .memwrite(memwrite),
-        .pcsrc(pcsrc), .alusrc(alusrc),
-        .regdst(regdst), .regwrite(regwrite),
-        .jump(jump), .alucontrol(alucontrol)
-    );
+    logic [5:0] op;
+    logic [5:0] funct;
+    
+    logic       regwrite;
+    logic       regdst;
+    logic       alusrc;
+    logic       branch;
+    logic       memwrite;
+    logic       memtoreg;
+    logic       jump;
+    logic [3:0] alucontrol;
+    logic       is_repeat;
+
+    // Instantiate Unit Under Test
+    controller dut (.*);
 
     initial begin
-        $dumpfile("controller.vcd");
-        $dumpvars(0, tb_controller);
+        op = 6'b000000; funct = 6'b100000; #10;
+        $display("t=%0t | ADD  -> RegWrite: %b, ALUControl: 0b%4b, Branch Out: %b", $time, regwrite, alucontrol, branch);
+        op = 6'b000100; funct = 6'b000000; #10;
+        $display("t=%0t | BEQ  -> RegWrite: %b, ALUControl: 0b%4b, Branch Out: %b", $time, regwrite, alucontrol, branch);
+        op = 6'b000000; funct = 6'b111111; #10;
+        $display("t=%0t | MADD -> RegWrite: %b, ALUControl: 0b%4b, IsRepeat: %b", $time, regwrite, alucontrol, is_repeat);
+        op = 6'b011111; funct = 6'b000000; #10;
+        $display("t=%0t | REPT -> RegWrite: %b, ALUControl: 0b%4b, IsRepeat: %b", $time, regwrite, alucontrol, is_repeat);
 
-        $display("Testing Controller Logic...");
-        op = 6'b000000; funct = 6'h20; zero = 0;
-        #10;
-        $display("R-Type ADD: RegWrite=%b, ALUControl=%b", regwrite, alucontrol);
-
-        op = 6'h23; funct = 6'b0;
-        #10;
-        $display("LW: ALUSrc=%b, MemtoReg=%b, RegWrite=%b", alusrc, memtoreg, regwrite);
-
-        op = 6'h04; zero = 1;
-        #10;
-        $display("BEQ Taken: PCSrc=%b (Should be 1)", pcsrc);
-
-        op = 6'h04; zero = 0;
-        #10;
-        $display("BEQ Not Taken: PCSrc=%b (Should be 0)", pcsrc);
-
-        op = 6'h02;
-        #10;
-        $display("Jump: Jump=%b", jump);
-
-        #10 $finish;
+        $finish;
     end
+
 endmodule

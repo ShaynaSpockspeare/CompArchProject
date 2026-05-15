@@ -15,45 +15,54 @@
 `include "../imem/imem.sv"
 `include "../dmem/dmem.sv"
 
-module computer
-    #(parameter n = 32)(
-    //
-    // ---------------- PORT DEFINITIONS ----------------
-    //
-    input  logic           clk, reset, 
-    output logic [(n-1):0] writedata, dataadr, 
-    output logic           memwrite
+module computer(
+    input  logic        clk,
+    input  logic        reset,
+    
+    // External tracking lines for debugging and verification
+    output logic [31:0] pc_out,
+    output logic [31:0] instr_out,
+    output logic [31:0] aluout_out,
+    output logic [31:0] writedata_out,
+    output logic [31:0] readdata_out,
+    output logic        memwrite_out,
+    output logic        loop_active_out
 );
-    //
-    // ---------------- MODULE DESIGN IMPLEMENTATION ----------------
-    //
-    logic [(n-1):0] pc, instr, readdata;
 
-//  The RISC CPU
-    // used named mapping to ensure the 4-bit alucontrol logic inside works
-    cpu mips(
+    // Structural interconnect wires
+    logic [31:0] pc, instr, aluout, writedata, readdata;
+    logic        memwrite, loop_active;
+
+    // Route internal signals out to the top-level ports for the testbench to see
+    assign pc_out          = pc;
+    assign instr_out       = instr;
+    assign aluout_out      = aluout;
+    assign writedata_out   = writedata;
+    assign readdata_out    = readdata;
+    assign memwrite_out    = memwrite;
+    assign loop_active_out = loop_active;
+
+    cpu pipeline_cpu (
         .clk(clk),
         .reset(reset),
         .pc(pc),
         .instr(instr),
         .memwrite(memwrite),
-        .aluout(dataadr),
+        .aluout(aluout),
         .writedata(writedata),
-        .readdata(readdata)
+        .readdata(readdata),
+        .loop_active(loop_active)
     );
 
-    //  The instruction memory (ROM - holds your assembly code)
-    // pc[7:2] handles word-alignment for a small 64-word memory
-    imem imem(
+    imem instruction_ram (
         .a(pc[7:2]), 
         .rd(instr)
     );
 
-    // The data memory (RAM - holds your data)
-    dmem dmem(
+    dmem data_ram (
         .clk(clk),
         .we(memwrite),
-        .a(dataadr),
+        .a(aluout),
         .wd(writedata),
         .rd(readdata)
     );

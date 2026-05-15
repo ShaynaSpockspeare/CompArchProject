@@ -18,18 +18,19 @@ module cpu
     #(parameter n = 32)(
    
     input  logic           clk, reset,
-    output logic [(n-1):0] pc,
-    input  logic [(n-1):0] instr,
-    output logic           memwrite,
-    output logic [(n-1):0] aluout, writedata,
-    input  logic [(n-1):0] readdata
+   output logic [31:0] pc,
+    input  logic [31:0] instr,
+
+    output logic        memwrite,
+    output logic [31:0] aluout,
+    output logic [31:0] writedata,
+    input  logic [31:0] readdata,
+    
+    output logic        loop_active
 );
-
-    //
-
-    // cpu internal components
-    logic       memtoreg, alusrc, regdst, regwrite, jump, pcsrc, zero;
-    logic [3:0] alucontrol; // CHANGED: Expanded to 4 bits for custom DSP MADD
+    logic        regwrite, regdst, alusrc, branch, memtoreg, jump;
+    logic [3:0]  alucontrol;
+    logic        is_repeat;
 
     // the control unit
     controller c (
@@ -44,25 +45,27 @@ module cpu
         .regwrite(regwrite),
         .jump(jump),
         .alucontrol(alucontrol)
+        .is_repeat(is_repeat)
     );
  
     // datapath
-    datapath #(32) dp (
+    datapath dp (
         .clk(clk),
         .reset(reset),
-        .memtoreg(memtoreg),
-        .pcsrc(pcsrc),
-        .alusrc(alusrc),
-        .regdst(regdst),
-        .regwrite(regwrite),
-        .jump(jump),
-        .alucontrol(alucontrol),
-        .zero(zero),
-        .pc(pc),
-        .instr(instr),
-        .aluout(aluout),
-        .writedata(writedata),
-        .readdata(readdata)
+        .regwrite_id(regwrite),
+        .regdst_id(regdst),
+        .alusrc_id(alusrc),
+        .branch_id(branch),
+        .memwrite_id(memwrite),
+        .memtoreg_id(memtoreg),
+        .alucontrol_id(alucontrol),
+        .is_repeat_id(is_repeat),
+        .pc_if(pc),
+        .instr_if(instr),
+        .aluout_mem(aluout),
+        .writedata_mem(writedata),
+        .readdata_mem(readdata),
+        .loop_active_out(loop_active)
     );
 
 endmodule
