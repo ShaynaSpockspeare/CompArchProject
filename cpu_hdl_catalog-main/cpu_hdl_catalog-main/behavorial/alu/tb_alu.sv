@@ -4,75 +4,62 @@
 // Module Name: tb_alu
 // Description: Testbench for 32-bit ALU with custom DSP MADD
 /////////////////////////////////////////////////////////////////////////
-`ifndef TB_ALU
-`define TB_ALU
-
 `timescale 1ns/100ps
-`include "alu.sv"
 
-module tb_alu;
+module tb_alu();
 
-    // Inputs
-    logic clk;
-    logic [31:0] a, b;
-    logic [3:0] alucontrol;
+    logic        clk;
+    logic        reset;
+    logic [31:0] src_a;
+    logic [31:0] src_b;
+    logic [3:0]  alu_control;
+    
+    logic [31:0] alu_result;
+    logic        zero;
 
-    // Outputs
-    logic [31:0] result;
-    logic zero;
+    // Instantiate UUT
+    alu dut (.*);
 
-    // Instantiate the Unit Under Test (UUT)
-    // We pass the parameter n = 32 for a 32-bit ALU
-    alu #(32) uut (
-        .clk(clk),
-        .a(a),
-        .b(b),
-        .alucontrol(alucontrol),
-        .result(result),
-        .zero(zero)
-    );
-
-    // ---------------------------------------------------------
-    // CLOCK GENERATOR: Flips the clock signal every 5 nanoseconds
-    // ---------------------------------------------------------
+    // 10ns clock generation
     always #5 clk = ~clk;
 
     initial begin
-        // Setup VCD file for GTKWave waveform viewing later
-        $dumpfile("alu.vcd");
-        $dumpvars(0, tb_alu);
-
-        // Initialize Inputs
         clk = 0;
-        a = 32'd0; 
-        b = 32'd0; 
-        alucontrol = 4'b0000;
+        reset = 1;
+        src_a = 0;
+        src_b = 0;
+        alu_control = 4'b0000;
 
-        // 1. Test ADD (4'b0010): 10 + 15 = 25
-        #10 a = 32'd10; b = 32'd15; alucontrol = 4'b0010;
+        // Check reset state
+        #12 reset = 0;
 
-        // 2. Test SUB (4'b0110): 20 - 5 = 15
-        #10 a = 32'd20; b = 32'd5; alucontrol = 4'b0110;
+        src_a = 32'd15;
+        src_b = 32'd25;
+        alu_control = 4'b0010; // ADD
+        #2;
+        $display("t=%0t | Combinational ADD - Result: %d (Expect 40), Zero: %b", $time, alu_result, zero);
 
-        // 3. Test Standard MULT (4'b0011): 4 * 5 = 20
-        // (This saves the 20 into the HiLo register on the clock drop)
-        #10 a = 32'd4; b = 32'd5; alucontrol = 4'b0011;
-        #10; // Wait for the clock cycle to finish
+        #8; // Sync back close to clock edge
+        src_a = 32'd4;
+        src_b = 32'd5;
+        alu_control = 4'b1000; // MADD
+        
+        #10; // Wait for positive edge write
+        src_a = 32'd3;
+        src_b = 32'd10;
+        
+        #10; // Wait for next positive edge write
+        alu_control = 4'b0010; // Switch to normal ADD
+        src_a = 32'd0;
+        src_b = 32'd0;
+        
+        // MADD control check
+        alu_control = 4'b1000;
+        #1;
+        $display("t=%0t | Cumulative DSP MADD - Result: %d (Expect 50)", $time, alu_result);
 
-        // 4. Test MFLO (4'b0100): Should output the 20 we just calculated
-        #10 alucontrol = 4'b0100; 
-
-        // 5. Test CUSTOM DSP MADD (4'b1000): 3 * 6 = 18. 
-        // It should add 18 to the existing 20 in the HiLo register!
-        #10 a = 32'd3; b = 32'd6; alucontrol = 4'b1000;
-        #10; // Wait for the clock cycle to finish
-
-        // 6. Test MFLO again (4'b0100): Should output 38!
-        #10 alucontrol = 4'b0100;
-
-        #20 $finish;
+        #9;
+        $finish;
     end
 
 endmodule
-
-`endif // TB_ALU

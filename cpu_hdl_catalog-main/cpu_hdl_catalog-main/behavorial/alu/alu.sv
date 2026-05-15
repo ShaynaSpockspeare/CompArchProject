@@ -13,68 +13,62 @@
 `timescale 1ns/100ps
 
 module alu
-    #(parameter n = 32)(
-    //
-    // ---------------- PORT DEFINITIONS ----------------
-    //
+
     input  logic        clk,
-    input  logic [(n-1):0] a, b,
-    input  logic [3:0]  alucontrol, // upgraded this line 
-    output logic [(n-1):0] result,
+    input  logic        reset,
+    input  logic [31:0] src_a,         // Operand A (Forwarded rs value)
+    input  logic [31:0] src_b,         // Operand B (Forwarded rt or SignImm value)
+    input  logic [3:0]  alu_control,   // Control token opcode
+    
+    output logic [31:0] alu_result,
     output logic        zero
 );
-    //
-    // ---------------- MODULE DESIGN IMPLEMENTATION ----------------
-    //
-    logic [(n-1):0] condinvb, sum;
-    logic [(2*n-1):0] HiLo;
+    logic [31:0] hi_reg;
+    logic [31:0] lo_reg;
+    logic [64:0] product;
+    logic [63:0] current_accumulator;
+    logic [63:0] next_accumulator;
 
-    assign zero = (result == {n{1'b0}}); // zero result control signal
-    assign condinvb = alucontrol[2] ? ~b : b;
-    assign sumSlt = a + condinvb + alucontrol[2]; // (a-b using 2s complement) test if a == b, if b<a, then sumSlt will have neg bit[31]
+    // Combinational Math Blocks
+    always_comb begin
+        // Default assignments to prevent latch generation
+        product           = 65'b0;
+        current_accumulator = {hi_reg, lo_reg};
+        next_accumulator    = current_accumulator;
+        
+        case (alu_control)
+            4'b0000: alu_result = src_a & src_b; // AND
+            4'b0001: alu_result = src_a | src_b; // OR
+            4'b0010: alu_result = src_a + src_b; // ADD
+            4'b0110: alu_result = src_a - src_b; // SUBTRACT
+            4'b0111: alu_result = (src_a < src_b) ? 32'b1 : 32'b0; // SLT
+            4'b1100: alu_result = ~(src_a | src_b); // NOR
 
-    // initialize the internal HiLo register used in multiplying two 32-bit numbers = a 64-bit number.
-    initial
-        begin
-            HiLo = 64'b0;
-        end
-
-    always @(a,b,alucontrol) begin
-        case (alucontrol)
-            4'b0000: result = a & b;             // and
-            4'b0001: result = a | b;             // or
-            4'b0010: result = a + b;             // add
-            4'b0110: result = sumSlt;            // sub
-            4'b0100: result = HiLo[(n-1):0];     // MFLO lower 32 bits
-            4'b0101: result = HiLo[(2*n-1):n];   // MFHI higher 32 bits
-            4'b0111: begin                       // slt
-				if (a[31] != b[31]) begin
-					if (a[31] > b[31])
-						result = 1;
-					else
-						result = 0;
-                 end else begin
-                 if (a < b) result = 1; 
-				else result = 0;
-					if (a < b)
-						result = 1;
-					else
-						result = 0;
+            4'b1000: begin // MADD 
+                // Signed multiply of the two 32-bit inputs
+                product = $signed(src_a) * $signed(src_b);
+                // Accumulate with the existing 64-bit state
+                next_accumulator = current_accumulator + product[63:0];
+                // Route lower 32-bits to output for convenience if needed
+                alu_result = next_accumulator[31:0]; 
             end
-        end 
-        default: result = 32'b0; // Safety default
-    endcase
-
-    //Multiply and DSP results are only stored at clock falling edge.
-    always @(negedge clk) begin
-        case (alucontrol)
-            4'b0011: HiLo = a * b; // mult
-
-            4'b1000: HiLo = HiLo + (a * b); // MADD (custom to DSP)
-        endcase				
+            
+            default: alu_result = 32'b0;
+        endcase
     end
- // removed the division logic to accomodate DSP (MIPS DSPs 
- // rarely use hardware division)
- 
- endmodule
- 'endif // ALU
+
+    always_ff @(posedge clk or posedge reset) begin
+        if (reset) begin
+            hi_reg <= 32'b0;
+            lo_reg <= 32'b0;
+        end else if (alu_control == 4'b1000) begin
+            hi_reg <= next_accumulator[63:32];
+            lo_reg <= next_accumulator[31:0];
+        end
+    end
+
+    assign zero = (alu_result == 32'b0);
+
+endmodule
+
+`endif // ALU
