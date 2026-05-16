@@ -14,14 +14,14 @@
 
 `timescale 1ns/100ps
 
-`include "if_id_reg.sv"
-`include "id_ex_reg.sv"
-`include "ex_mem_reg.sv"
-`include "mem_wb_reg.sv"
-`include "forwarding.sv"
-`include "hazard.sv"
-`include "mux3.sv"
-`include "loop_ctrl.sv"
+`include "../if_id_reg/if_id_reg.sv"
+`include "../id_ex_reg/id_ex_reg.sv"
+`include "../ex_mem_reg/ex_mem_reg.sv"
+`include "../mem_wb_reg/mem_wb_reg.sv"
+`include "../forwarding/forwarding.sv"
+`include "../hazard/hazard.sv"
+`include "../mux3/mux3.sv"
+`include "../loop_ctrl/loop_ctrl.sv"
 
 module datapath
     input  logic        clk, reset,
