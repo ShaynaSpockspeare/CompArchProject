@@ -12,7 +12,7 @@
 
 `timescale 1ns/100ps
 
-module aludec
+module aludec (
     input  logic [5:0] funct,
     input  logic [1:0] aluop,
     output logic [3:0] alucontrol 
