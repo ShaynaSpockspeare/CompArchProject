@@ -1,0 +1,3 @@
+No part was done by just one person because debugging was required, connecting parts, etc, but the following table is how Christine and I assigned the "modules" to each other (so who did most of the work on the file).
+Shayna: regfile, imem, dmem, controller, cpu, if_id_reg, id_ex_reg, ex_mem_reg, mem_wb_reg, forwarding
+Christine: muxes, adder, signext, dff, alu, maindec, aludec, datapath, computer, hazard, loop_ctrl
