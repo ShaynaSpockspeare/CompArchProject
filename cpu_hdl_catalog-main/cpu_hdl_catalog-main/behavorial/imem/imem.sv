@@ -24,16 +24,13 @@ module imem
     input  logic [(r-1):0] addr,
     output logic [(n-1):0] readdata
 );
-    //
-    // ---------------- MODULE DESIGN IMPLEMENTATION ----------------
-    //
     logic [(n-1):0] RAM[0:(2**r-1)];
 
   initial
     begin
       // read memory in hex format from file 
       // $readmemh("program_exe",RAM);
-      $readmemh("mult-prog_exe",RAM);
+      $readmemh("memfile.dat",RAM);
     end
 
   assign readdata = RAM[addr]; // word aligned

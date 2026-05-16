@@ -23,7 +23,7 @@
 `include "../mux3/mux3.sv"
 `include "../loop_ctrl/loop_ctrl.sv"
 
-module datapath
+module datapath(
     input  logic        clk, reset,
     input  logic        regwrite_id, regdst_id, alusrc_id,
     input  logic        branch_id, memwrite_id, memtoreg_id,
@@ -38,6 +38,14 @@ module datapath
     
     output logic        loop_active_out
 );
+    logic [1:0]  forward_a;         
+    logic [1:0]  forward_b;        
+    logic        loop_active;    
+    logic [31:0] loop_target_pc;    
+    logic        pc_en;            
+    logic        if_id_en;          
+    logic        id_ex_clear;
+
     logic [31:0] pc_next, pc_plus4_if;
     logic [31:0] pc_standard;
     

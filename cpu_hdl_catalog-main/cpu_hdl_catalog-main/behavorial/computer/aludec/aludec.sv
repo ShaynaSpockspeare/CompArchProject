@@ -43,4 +43,3 @@ module aludec (
 endmodule
 
 `endif // ALUDEC
-`endif // ALUDEC

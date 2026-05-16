@@ -12,7 +12,7 @@
 
 `timescale 1ns/100ps
 
-module alu
+module alu(
 
     input  logic        clk,
     input  logic        reset,

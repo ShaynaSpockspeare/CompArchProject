@@ -11,7 +11,7 @@
 
 `timescale 1ns/100ps
 
-`include "../cpu/cpu.sv"
+//`include "cpu/cpu.sv"
 `include "../imem/imem.sv"
 `include "../dmem/dmem.sv"
 
@@ -55,16 +55,16 @@ module computer(
     );
 
     imem instruction_ram (
-        .a(pc[7:2]), 
-        .rd(instr)
+        .addr(pc[7:2]), 
+        .readdata(instr)
     );
 
     dmem data_ram (
         .clk(clk),
-        .we(memwrite),
-        .a(aluout),
-        .wd(writedata),
-        .rd(readdata)
+        .write_enable(memwrite),
+        .addr(aluout),
+        .writedata(writedata),
+        .readdata(readdata)
     );
 
 endmodule

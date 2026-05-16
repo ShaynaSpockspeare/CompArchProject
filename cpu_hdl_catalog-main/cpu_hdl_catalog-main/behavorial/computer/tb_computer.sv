@@ -5,12 +5,12 @@ module tb_computer();
     logic        clk;
     logic        reset;
     
-    logic [31:0] pc;
-    logic [31:0] instr;
-    logic [31:0] aluout;
-    logic [31:0] writedata;
-    logic [31:0] readdata;
-    logic        memwrite;
+    logic [31:0] pc_out;
+    logic [31:0] instr_out;
+    logic [31:0] aluout_out;
+    logic [31:0] writedata_out;
+    logic [31:0] readdata_out;
+    logic        memwrite_out;
     logic        loop_active;
 
     // Instantiate System Top-Level

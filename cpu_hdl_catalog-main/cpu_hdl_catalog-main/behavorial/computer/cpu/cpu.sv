@@ -11,8 +11,8 @@
 
 `timescale 1ns/100ps
 
-`include "../controller/controller.sv"
-`include "../datapath/datapath.sv"
+//`include "controller/controller.sv"
+//`include "datapath/datapath.sv"
 
 module cpu
     #(parameter n = 32)(
@@ -44,7 +44,7 @@ module cpu
         .regdst(regdst),
         .regwrite(regwrite),
         .jump(jump),
-        .alucontrol(alucontrol)
+        .alucontrol(alucontrol),
         .is_repeat(is_repeat)
     );
  

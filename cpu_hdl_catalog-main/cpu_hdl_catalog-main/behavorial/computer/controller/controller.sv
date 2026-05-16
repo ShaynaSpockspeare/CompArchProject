@@ -15,8 +15,8 @@
 
 `timescale 1ns/100ps
 
-`include "../maindec/maindec.sv"
-`include "../aludec/aludec.sv"
+//`include "maindec/maindec.sv"
+//`include "aludec/aludec.sv"
 
 module controller
     #(parameter n = 32)(
@@ -26,7 +26,8 @@ module controller
     output logic       pcsrc, alusrc,
     output logic       regdst, regwrite,
     output logic       jump,
-    output logic [3:0] alucontrol
+    output logic [3:0] alucontrol,
+    output logic is_repeat
 );
 
     logic [1:0] aluop;
