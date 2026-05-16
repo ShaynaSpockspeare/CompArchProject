@@ -18,7 +18,8 @@ module maindec
     output logic       branch, alusrc,
     output logic       regdst, regwrite,
     output logic       jump,
-    output logic [1:0] aluop
+    output logic [1:0] aluop,
+    output logic       is_repeat
 );
 
     logic [9:0] controls; // 10-bit control vector
